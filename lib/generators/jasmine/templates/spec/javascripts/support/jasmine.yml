@@ -71,3 +71,5 @@ src_dir:
 # spec_dir: spec/javascripts
 #
 spec_dir:
+middlewares:
+  - /Users/timocratic/Desktop/middlewares.rb

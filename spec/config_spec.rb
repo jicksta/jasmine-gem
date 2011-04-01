@@ -40,6 +40,7 @@ describe Jasmine::Config do
       before(:each) do
         @config.stub!(:src_dir).and_return(File.join(@project_dir, "."))
         @config.stub!(:spec_dir).and_return(File.join(@project_dir, "spec/javascripts"))
+        puts File.join(@project_dir, "spec/javascripts")
       end
 
       describe "using default jasmine.yml" do
@@ -61,6 +62,10 @@ describe Jasmine::Config do
 
         it "should find any helpers" do
           @config.helpers.should == ['helpers/SpecHelper.js']
+        end
+
+        it "should find any middlewares" do
+          @config.middlewares.should == ['support/jasmine_middleware.ru']
         end
 
         it "should build an array of all the JavaScript files to include, source files then spec files" do
@@ -142,7 +147,11 @@ describe Jasmine::Config do
         end
 
         it "helpers" do
-          @config.spec_files.should == ['file1.ext', 'file2.ext']
+          @config.helpers.should == ['file1.ext', 'file2.ext']
+        end
+        
+        it "middlewares" do
+          @config.middlewares.should == ['file1.ext', 'file2.ext']
         end
 
         it "js_files" do

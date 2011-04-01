@@ -135,6 +135,17 @@ module Jasmine
       end
     end
 
+    def middlewares
+      require 'pp'
+      puts simple_config["middlewares"]
+      pp match_files(spec_dir, simple_config['middlewares'])
+      if simple_config["middlewares"]
+        match_files(spec_dir, simple_config['middlewares'])
+      else
+        []
+      end
+    end
+
     def src_files
       if simple_config['src_files']
         match_files(src_dir, simple_config['src_files'])

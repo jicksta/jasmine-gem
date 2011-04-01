@@ -12,4 +12,8 @@ class JasmineSelfTestConfig < Jasmine::Config
   def spec_dir
     File.join(project_root, 'jasmine/spec')
   end
+
+  def jasmine_config_ru
+    "/Users/timocratic/Desktop/middlewares.rb"
+  end
 end

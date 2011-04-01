@@ -1,3 +1,16 @@
+# middlewares
+#
+# Rackup files that get loaded by the Jasmine server that can mount extensions.
+# Default: javascripts/support/*.ru
+#
+# EXAMPLE:
+#
+# middlewares:
+#   - javascripts/support/*.ru
+#
+middlewares:
+    - javascripts/support/*.ru
+
 # src_files
 #
 # Return an array of filepaths relative to src_dir to include before jasmine specs.

@@ -1,13 +1,28 @@
 require 'rack'
 
+
+CONFIG_CONTENTS = <<-RUBY
+  evil = Class.new do
+          def initialize(app)
+            @app = app
+          end
+
+          def call(env)
+            100.times { puts "WEEE" }
+            @app.call(env)
+          end
+        end
+  use evil
+RUBY
+
 module Jasmine
   class RunAdapter
     def initialize(config)
       @config = config
       @jasmine_files = [
-        "/__JASMINE_ROOT__/lib/jasmine.js",
-        "/__JASMINE_ROOT__/lib/jasmine-html.js",
-        "/__JASMINE_ROOT__/lib/json2.js",
+          "/__JASMINE_ROOT__/lib/jasmine.js",
+          "/__JASMINE_ROOT__/lib/jasmine-html.js",
+          "/__JASMINE_ROOT__/lib/json2.js",
       ]
       @jasmine_stylesheets = ["/__JASMINE_ROOT__/lib/jasmine.css"]
     end
@@ -32,9 +47,9 @@ module Jasmine
       js_files = @config.js_files(focused_suite)
       body = ERB.new(File.read(File.join(File.dirname(__FILE__), "run.html.erb"))).result(binding)
       [
-        200,
-        { 'Content-Type' => 'text/html' },
-        [body]
+          200,
+          {'Content-Type' => 'text/html'},
+          [body]
       ]
     end
   end
@@ -46,9 +61,9 @@ module Jasmine
 
     def call(env)
       [
-        302,
-        { 'Location' => @url },
-        []
+          302,
+          {'Location' => @url},
+          []
       ]
     end
   end
@@ -56,9 +71,9 @@ module Jasmine
   class JsAlert
     def call(env)
       [
-        200,
-        { 'Content-Type' => 'application/javascript' },
-        ["document.write('<p>Couldn\\'t load #{env["PATH_INFO"]}!</p>');"]
+          200,
+          {'Content-Type' => 'application/javascript'},
+          ["document.write('<p>Couldn\\'t load #{env["PATH_INFO"]}!</p>');"]
       ]
     end
   end
@@ -78,18 +93,24 @@ module Jasmine
     Rack::Builder.app do
       use Rack::Head
 
-      map('/run.html')         { run Jasmine::Redirect.new('/') }
-      map('/__suite__')        { run Jasmine::FocusedSuite.new(config) }
+      config.middlewares.each do |file|
+        middleware_file_contents = File.read file
+        instance_eval(middleware_file_contents, file)
+      end
+
+      map('/run.html') { run Jasmine::Redirect.new('/') }
+      map('/__suite__') { run Jasmine::FocusedSuite.new(config) }
 
       map('/__JASMINE_ROOT__') { run Rack::File.new(Jasmine.root) }
-      map(config.spec_path)    { run Rack::File.new(config.spec_dir) }
-      map(config.root_path)    { run Rack::File.new(config.project_root) }
+      map(config.spec_path) { run Rack::File.new(config.spec_dir) }
+      map(config.root_path) { run Rack::File.new(config.project_root) }
+
 
       map('/') do
         run Rack::Cascade.new([
-          Rack::URLMap.new('/' => Rack::File.new(config.src_dir)),
-          Jasmine::RunAdapter.new(config)
-        ])
+                                  Rack::URLMap.new('/' => Rack::File.new(config.src_dir)),
+                                  Jasmine::RunAdapter.new(config)
+                              ])
       end
     end
   end

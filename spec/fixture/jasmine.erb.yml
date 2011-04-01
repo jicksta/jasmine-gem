@@ -2,3 +2,5 @@ src_files:
 <% 3.times do |i| %>
   - <%= "file#{i}.js" %>
 <% end %>
+middlewares:
+  - /Users/timocratic/Desktop/middlewares.rb
